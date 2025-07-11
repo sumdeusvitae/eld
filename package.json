@@ -1,0 +1,15 @@
+{
+  "name": "playwright-scraper",
+  "version": "1.0.0",
+  "main": "scrape.js",
+  "type": "module",
+  "scripts": {
+    "start": "node scrape.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.0",
+    "playwright": "^1.44.0",
+    "ws": "^8.17.0",
+    "mongodb": "^5.8.0"
+  }
+}
