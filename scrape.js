@@ -77,8 +77,8 @@ async function scrapeDrivers(username, password, url) {
 scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
 scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
 
-// ✅ Run every 5 minutes
-setInterval(() => {
-  scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
-  scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
-}, 5 * 60 * 1000);
+// // ✅ Run every 5 minutes
+// setInterval(() => {
+//   scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
+//   scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
+// }, 5 * 60 * 1000);

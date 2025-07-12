@@ -1,0 +1,33 @@
+name: Scheduled Scrape Job
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # every 5 minutes
+  workflow_dispatch:         # also allow manual trigger
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run scraper
+      env:
+        ROBINHOOD_USERNAME: ${{ secrets.ROBINHOOD_USERNAME }}
+        ROBINHOOD_PASSWORD: ${{ secrets.ROBINHOOD_PASSWORD }}
+        ROBINHOOD_URL: ${{ secrets.ROBINHOOD_URL }}
+        FLEX_USERNAME: ${{ secrets.FLEX_USERNAME }}
+        FLEX_PASSWORD: ${{ secrets.FLEX_PASSWORD }}
+        FLEX_URL: ${{ secrets.FLEX_URL }}
+        MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      run: node scrape.js
