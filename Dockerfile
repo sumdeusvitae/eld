@@ -10,4 +10,5 @@ RUN npm install
 COPY . .
 
 # Run your script
-CMD ["node", "scrape.js"]
+CMD ["node", "server.js"]
+
