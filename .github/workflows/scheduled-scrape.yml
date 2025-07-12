@@ -2,7 +2,7 @@ name: Scheduled Scrape Job
 
 on:
   schedule:
-    - cron: '*/1 * * * *'   # every 1 minutes
+    - cron: '*/59 * * * *'   # every 59 minutes
   workflow_dispatch:         # also allow manual trigger
 
 jobs:
@@ -32,5 +32,5 @@ jobs:
         FLEX_USERNAME: ${{ secrets.FLEX_USERNAME }}
         FLEX_PASSWORD: ${{ secrets.FLEX_PASSWORD }}
         FLEX_URL: ${{ secrets.FLEX_URL }}
-        MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        SERVER_URL: ${{ secrets.SERVER_URL }}
       run: node scrape.js

@@ -1,8 +1,9 @@
 import 'dotenv/config';
 
 import { chromium } from 'playwright';
+import fetch from 'node-fetch'; // ✅ Add this at the top of your file
 import config from './config.js';
-import connectDB from './db.js'; // ✅ ES import — make sure db.js uses export default
+
 
 process.on('unhandledRejection', (reason) => {
   console.error('Unhandled Promise rejection:', reason);
@@ -40,31 +41,37 @@ async function scrapeDrivers(username, password, url) {
       });
     });
 
-    const db = await connectDB();
-    const collection = db.collection('drivers');
 
-    for (const row of drivers) {
-      if (row.length < 11) continue;
 
-      await collection.updateOne(
-        { name: row[0] },
-        {
-          $set: {
-            status: row[1],
-            location: row[2],
-            truck_id: row[3],
-            shift_start: row[4],
-            break_time: row[5],
-            drive_time: row[6],
-            cycle_time: row[7],
-            connection_status: row[9],
-            reported_at: row[10],
-            last_updated: new Date()
-          }
-        },
-        { upsert: true }
-      );
+    const filteredDrivers = drivers
+      .filter(row => row.length >= 11)
+      .map(row => ({
+        name: row[0],
+        status: row[1],
+        location: row[2],
+        truck_id: row[3],
+        shift_start: row[4],
+        break_time: row[5],
+        drive_time: row[6],
+        cycle_time: row[7],
+        connection_status: row[9],
+        reported_at: row[10],
+        last_updated: new Date().toISOString()
+      }));
+
+    try {
+      const response = await fetch(server_Url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ drivers: filteredDrivers })
+      });
+
+      const result = await response.json();
+      console.log('Server response:', result);
+    } catch (err) {
+      console.error('Failed to send to Go server:', err);
     }
+
 
   } catch (error) {
     console.error('Scraping failed:', error);
@@ -74,15 +81,21 @@ async function scrapeDrivers(username, password, url) {
 }
 
 
-// // ✅ Run every 5 minutes
-// setInterval(() => {
-//   scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
-//   scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
-// }, 5 * 60 * 1000);
+
 
 async function main() {
-  await scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
-  await scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
+  const initialTime = new Date();
+  let currentTime = new Date();
+  const maxCount = 60 * 60 * 1000; // 1 hour in milliseconds
+
+  while ((initialTime - currentTime) < maxCount) {
+    // // // ✅ Run every 1 minute
+    setInterval(() => {
+      scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
+      scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
+    }, 60 * 1000);
+    currentTime = new Date();
+  }
 
   // Optional: force exit if something is still keeping the process alive
   process.exit(0);

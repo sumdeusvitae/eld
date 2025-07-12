@@ -5,4 +5,5 @@ export default {
   flex_username: process.env.FLEX_USERNAME,
   flex_password: process.env.FLEX_PASSWORD,
   flex_Url: process.env.FLEX_URL,
+  server_Url: process.env.SERVER_URL,
 };
