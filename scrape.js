@@ -83,22 +83,28 @@ async function scrapeDrivers(username, password, url) {
 
 
 
-async function main() {
-  const initialTime = new Date();
-  let currentTime = new Date();
-  const maxCount = 60 * 60 * 1000; // 1 hour in milliseconds
+const INTERVAL_MS = 60 * 1000; // 1 minute
+const DURATION_MS = 60 * 60 * 1000; // 1 hour
 
-  while ((initialTime - currentTime) < maxCount) {
-    // // // ✅ Run every 1 minute
-    setInterval(() => {
-      scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
-      scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
-    }, 60 * 1000);
-    currentTime = new Date();
+const END_TIME = Date.now() + DURATION_MS;
+
+async function runScraper() {
+  const now = Date.now();
+  if (now >= END_TIME) {
+    console.log('⏹️ Done: 1 hour elapsed.');
+    process.exit(0);
   }
 
-  // Optional: force exit if something is still keeping the process alive
-  process.exit(0);
+  console.log(`⏱️ Running at ${new Date().toLocaleTimeString()}`);
+  try {
+    await scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
+    await scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
+  } catch (err) {
+    console.error('❌ Scraper failed:', err);
+  }
+
+  // Schedule next run
+  setTimeout(runScraper, INTERVAL_MS);
 }
 
-main();
+runScraper();
