@@ -60,7 +60,7 @@ async function scrapeDrivers(username, password, url) {
       }));
 
     try {
-      const response = await fetch(server_Url, {
+      const response = await fetch(config.server_Url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ drivers: filteredDrivers })
