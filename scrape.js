@@ -73,12 +73,19 @@ async function scrapeDrivers(username, password, url) {
   }
 }
 
-// ✅ Run immediately
-scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
-scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
 
 // // ✅ Run every 5 minutes
 // setInterval(() => {
 //   scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
 //   scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
 // }, 5 * 60 * 1000);
+
+async function main() {
+  await scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
+  await scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
+
+  // Optional: force exit if something is still keeping the process alive
+  process.exit(0);
+}
+
+main();
