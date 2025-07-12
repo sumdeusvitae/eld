@@ -59,20 +59,7 @@ async function scrapeDrivers(username, password, url) {
         last_updated: new Date().toISOString()
       }));
 
-    try {
-      const response = await fetch(config.server_Url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ drivers: filteredDrivers })
-      });
-
-      const result = await response.json();
-      console.log('Server response:', result);
-    } catch (err) {
-      console.error('Failed to send to Go server:', err);
-    }
-
-
+    return filteredDrivers;
   } catch (error) {
     console.error('Scraping failed:', error);
   } finally {
@@ -97,10 +84,21 @@ async function runScraper() {
 
   console.log(`⏱️ Running at ${new Date().toLocaleTimeString()}`);
   try {
-    await scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
-    await scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
+    const robinhoodDrivers = await scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
+    const flexDrivers = await scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
+    // merge the results
+    const allDrivers = [...robinhoodDrivers, ...flexDrivers];
+
+    // Send once
+    const response = await fetch(config.server_Url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ drivers: allDrivers }),
+    });
+    const result = await response.json();
+    console.log('✅ Server response:', result);
   } catch (err) {
-    console.error('❌ Scraper failed:', err);
+    console.error('❌ Error during scraping or posting:', err);
   }
 
   // Schedule next run
