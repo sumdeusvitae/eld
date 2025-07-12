@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "dotenv": "^17.2.0",
+    "mongodb": "^5.8.0",
     "playwright": "^1.44.0",
-    "ws": "^8.17.0",
-    "mongodb": "^5.8.0"
+    "ws": "^8.17.0"
   }
 }

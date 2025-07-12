@@ -25,7 +25,7 @@ async function scrapeDrivers(username, password, url) {
     await page.click('button[type="submit"]');
 
     await page.waitForTimeout(3000);
-    await page.screenshot({ path: 'after-login.png', fullPage: true });
+    // await page.screenshot({ path: 'after-login.png', fullPage: true });
 
     await page.waitForSelector('a[href*="drivers"]', { timeout: 30000 });
 

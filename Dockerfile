@@ -1,18 +1,13 @@
-# Use official Playwright image
-FROM mcr.microsoft.com/playwright:v1.44.1-jammy
+# Dockerfile
 
-# Set working directory
+FROM mcr.microsoft.com/playwright:v1.45.0-jammy
+
 WORKDIR /app
 
-# Copy files
 COPY package*.json ./
-COPY . .
-
-# Install dependencies (Playwright already installed in base image)
 RUN npm install
 
-# Make sure script is executable if needed
-# RUN chmod +x scrape.js
+COPY . .
 
-# Default command (can be overridden)
+# Run your script
 CMD ["node", "scrape.js"]
