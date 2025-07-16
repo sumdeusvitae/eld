@@ -2,7 +2,7 @@ name: Scheduled Scrape Job
 
 on:
   schedule:
-    - cron: '* */1 * * *'   # every hour
+    - cron: '0 * * * *'   # every hour
   workflow_dispatch:         # also allow manual trigger
 
 jobs:
