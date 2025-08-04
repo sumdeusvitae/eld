@@ -2,14 +2,31 @@ name: Scheduled Scrape Job
 
 on:
   schedule:
-    - cron: '0 * * * *'   # every hour
+    - cron: '*/5 * * * *'   # every hour
   workflow_dispatch:         # also allow manual trigger
 
 jobs:
-  scrape:
+  check-and-scrape:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Check for active workflows
+      id: check
+      run: |
+        echo "Checking for in-progress workflows..."
+        repo="${{ github.repository }}"
+        token="${{ secrets.GITHUB_TOKEN }}"
+        active=$(curl -s -H "Authorization: token $token" \
+          "https://api.github.com/repos/$repo/actions/runs?status=in_progress" \
+          | jq '[.workflow_runs[] | select(.name != "Scheduled Scrape Job")] | length')
+
+        echo "Active workflows (excluding this one): $active"
+
+        if [ "$active" -gt 0 ]; then
+          echo "Other workflows are running. Skipping this run."
+          exit 0
+        fi
+
     - name: Checkout repo
       uses: actions/checkout@v4
 
