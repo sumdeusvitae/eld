@@ -15,18 +15,21 @@ jobs:
         echo "Checking for in-progress workflows..."
         repo="${{ github.repository }}"
         token="${{ secrets.GITHUB_TOKEN }}"
-        workflow_file="${{ github.workflow_ref##*/ }}" # Extract file name
-
+    
+        # Get the workflow file name from the GitHub context
+        workflow_file=$(basename "${GITHUB_WORKFLOW_REF}")
+    
         active=$(curl -s -H "Authorization: token $token" \
           "https://api.github.com/repos/$repo/actions/workflows/$workflow_file/runs?branch=${{ github.ref_name }}&status=in_progress" \
           | jq '[.workflow_runs[] | select(.id != '${{ github.run_id }}')] | length')
-
+    
         echo "Active runs: $active"
-
+    
         if [ "$active" -gt 0 ]; then
           echo "Another run is active. Exiting gracefully."
           exit 0
         fi
+
 
     - name: Checkout repo
       uses: actions/checkout@v4
