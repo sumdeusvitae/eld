@@ -1,0 +1,42 @@
+name: Scheduled Scrape Check
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # every 5 minutes
+  workflow_dispatch:        # manual trigger if needed
+
+jobs:
+  check-and-trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check for active scrape jobs
+      run: |
+        echo "Checking for in-progress scrape jobs..."
+        repo="${{ github.repository }}"
+        token="${{ secrets.GITHUB_TOKEN }}"
+        workflow_name="Scheduled Scrape Job" # must match Workflow B's name exactly
+
+        # Get workflow ID for the actual scrape job
+        workflow_id=$(curl -s -H "Authorization: token $token" \
+          "https://api.github.com/repos/$repo/actions/workflows" \
+          | jq -r --arg name "$workflow_name" '.workflows[] | select(.name == $name) | .id')
+
+        echo "Workflow ID: $workflow_id"
+
+        # Check if there's an active run
+        active=$(curl -s -H "Authorization: token $token" \
+          "https://api.github.com/repos/$repo/actions/workflows/$workflow_id/runs?branch=${{ github.ref_name }}&status=in_progress" \
+          | jq '.total_count')
+
+        if [ "$active" -gt 0 ]; then
+          echo "A scrape job is already running. Skipping."
+          exit 0
+        fi
+
+        echo "No active scrape job. Triggering..."
+        curl -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: token $token" \
+          "https://api.github.com/repos/$repo/actions/workflows/$workflow_id/dispatches" \
+          -d '{"ref":"${{ github.ref_name }}"}'
