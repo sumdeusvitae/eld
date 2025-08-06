@@ -71,7 +71,7 @@ async function scrapeDrivers(username, password, url) {
 
 
 const INTERVAL_MS = 60 * 1000; // 1 minute
-const DURATION_MS = 58 * 60 * 1000; // 58 minutes
+const DURATION_MS = 65 * 60 * 1000; // 65 minutes
 
 const END_TIME = Date.now() + DURATION_MS;
 
