@@ -2,7 +2,7 @@ name: Scheduled Scrape Job
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "47 * * * *"
   workflow_dispatch: # only triggered manually or by gatekeeper
 
 jobs:
