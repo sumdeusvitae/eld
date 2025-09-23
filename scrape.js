@@ -84,16 +84,16 @@ async function runScraper() {
 
   console.log(`⏱️ Running at ${new Date().toLocaleTimeString()}`);
   try {
-    const robinhoodDrivers = await scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
+    // const robinhoodDrivers = await scrapeDrivers(config.robinhood_username, config.robinhood_password, config.robinhood_Url);
     const flexDrivers = await scrapeDrivers(config.flex_username, config.flex_password, config.flex_Url);
     // merge the results
-    const allDrivers = [...robinhoodDrivers, ...flexDrivers];
+    // const allDrivers = [...robinhoodDrivers, ...flexDrivers];
 
     // Send once
     const response = await fetch(config.server_Url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ drivers: allDrivers }),
+      body: JSON.stringify({ drivers: flexDrivers }),
     });
     const result = await response.json();
     console.log('✅ Server response:', result);
