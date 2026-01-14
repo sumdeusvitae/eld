@@ -1,2 +1,2 @@
-"# eld" 
-Personal project to scrap
+Scrapping check ins:
+01/14/2026 ✔️
